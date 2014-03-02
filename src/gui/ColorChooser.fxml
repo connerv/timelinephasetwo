@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="49.0" prefWidth="210.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ColorChooserController">
+  <children>
+    <ColorPicker fx:id="colorPicker" layoutX="12.0" layoutY="12.0" />
+    <Button id="done" fx:id="select" layoutX="95.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleButtonActionSelect" text="Select" />
+    <Button fx:id="done" layoutX="147.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleButtonActionDone" text="Done" />
+  </children>
+</AnchorPane>

@@ -36,7 +36,7 @@ public class DBHelper implements DBHelperAPI{
     private Statement statement = null; 
 	
     /**
-     * The path of the database (should be <name>.db)
+     * The path of the database (should be databases/<name>.db)
      */
     private String dbName;
     
@@ -107,26 +107,20 @@ public class DBHelper implements DBHelperAPI{
 	}
 	
 	@Override
-	public boolean editTimelineInfo(Timeline timeline) {
-		open();
-		try {
-			writeTimelineInfo(timeline);
-		} catch (SQLException e) {
-			close();
-			return false;
-		}
-		close();
-		return true;
+	public Timeline changeTimeline(Timeline oldTimeline, Timeline newTimeline) {
+		removeTimeline(oldTimeline);
+		writeTimeline(newTimeline);
+		return newTimeline;
 	}
 
 	@Override
-	public boolean saveTimeline(Timeline timeline) {
+	public boolean writeTimeline(Timeline timeline) {
 		String tlName = timeline.getName(); 
 		open();
 		try {
 			statement.executeUpdate("CREATE TABLE "+tlName
 					+" ("+ID+",eventName TEXT, type TEXT, startDate DATETIME, endDate DATETIME, category TEXT);");
-			writeTimelineInfo(timeline);
+			writeAxisLabel(tlName, timeline.getAxisLabel());
 		} catch (SQLException e) {
 			if(e.getMessage().contains("already exists")) {
 				System.out.println("A timeline with that name already exists!");
@@ -134,9 +128,8 @@ public class DBHelper implements DBHelperAPI{
 			}
 			e.printStackTrace();
 		}
-		setTimelineID(timeline);
 		if(timeline.getEvents() == null)
-			return true; // did not save any events, timeline still created
+			return false;
 		for(TLEvent event : timeline.getEvents()){
 			try {
 				if(event instanceof Atomic){
@@ -154,25 +147,6 @@ public class DBHelper implements DBHelperAPI{
 		return true;
 	}
 	
-	private void setTimelineID(Timeline timeline) {
-		open();
-		try{
-			getID(timeline);
-		}catch(SQLException e){
-			
-		}
-		close();
-	}
-
-	private void getID(Timeline timeline) throws SQLException{
-		String SELECT_LABEL = "SELECT _id FROM timeline_info WHERE timelineName = ?;";
-		PreparedStatement pstmt = connection.prepareStatement(SELECT_LABEL);
-		pstmt.setString(1, timeline.getName());
-		resultSet = pstmt.executeQuery();
-		int id = resultSet.getInt(1);
-		timeline.setID(id);
-	}
-
 	/**
 	 * Uses prepared statements to insert the timelineName and axisLabel into the timeline_info table
 	 * 
@@ -180,12 +154,13 @@ public class DBHelper implements DBHelperAPI{
 	 * @param axisLabel the axisLabel enum value
 	 * @throws SQLException because there are databases
 	 */
-	private void writeTimelineInfo(Timeline timeline) throws SQLException{
+	private void writeAxisLabel(String timelineName, AxisLabel axisLabel) throws SQLException{
+		
 		String INSERT_LABEL = "INSERT INTO timeline_info (timelineName, axisLabel) VALUES "
 				+"(?,?);";
 		PreparedStatement pstmt = connection.prepareStatement(INSERT_LABEL);
-		pstmt.setString(1, timeline.getName());
-		pstmt.setString(2, timeline.getAxisLabel().name());
+		pstmt.setString(1, timelineName);
+		pstmt.setString(2, axisLabel.toString());
 		pstmt.executeUpdate();
 	}
 	
@@ -195,10 +170,10 @@ public class DBHelper implements DBHelperAPI{
 	 * @param timelineName the name of the timeline to remove the axisLabel of
 	 * @throws SQLException because there are databases
 	 */
-	private void removeTimelineInfo(int id) throws SQLException{
-		String REMOVE_LABEL = "DELETE FROM timeline_info WHERE _id = ?;";
+	private void removeAxisLabel(String timelineName) throws SQLException{
+		String REMOVE_LABEL = "DELETE FROM timeline_info WHERE timelineName = ?;";
 		PreparedStatement pstmt = connection.prepareStatement(REMOVE_LABEL);
-		pstmt.setInt(1, id);
+		pstmt.setString(1, timelineName);
 		pstmt.executeUpdate();
 	}
 	
@@ -225,6 +200,7 @@ public class DBHelper implements DBHelperAPI{
 		}
 	}
 	
+	
 	/**
 	 * Helper method for writeTimeline. Puts the atomic event in the correct 
 	 * timeline's database using prepared statements; overloaded see below
@@ -239,9 +215,9 @@ public class DBHelper implements DBHelperAPI{
 				+"(?,?,?,NULL,?);";
 		PreparedStatement pstmt = connection.prepareStatement(INSERT_ATOMIC);
 		pstmt.setString(1, event.getName());
-                pstmt.setString(2, "atomic");
-		pstmt.setDate(3, event.getStartDate());
-		pstmt.setString(4, event.getCategory().getName());
+		pstmt.setString(2, event.typeName());
+		pstmt.setDate(3, event.getDate());
+		pstmt.setString(4, event.getCategory());
 		pstmt.executeUpdate();
 	}
 	
@@ -259,10 +235,10 @@ public class DBHelper implements DBHelperAPI{
 				+"(?,?,?,?,?);";
 		PreparedStatement pstmt = connection.prepareStatement(INSERT_DURATION);
 		pstmt.setString(1, event.getName());
-		pstmt.setString(2, "duration");
+		pstmt.setString(2, event.typeName());
 		pstmt.setDate(3, event.getStartDate());
 		pstmt.setDate(4, event.getEndDate());
-		pstmt.setString(5, event.getCategory().getName());
+		pstmt.setString(5, event.getCategory());
 		pstmt.executeUpdate();
 	}
 
@@ -271,7 +247,7 @@ public class DBHelper implements DBHelperAPI{
 		open();
 		try {
 			statement.executeUpdate("DROP TABLE IF EXISTS'"+timeline.getName()+"';");
-			removeTimelineInfo(timeline.getID());
+			removeAxisLabel(timeline.getName());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -295,28 +271,28 @@ public class DBHelper implements DBHelperAPI{
 			for(int j = 0; j < numTimelines; j++){ // Get all timelines event arrays
 				resultSet = statement.executeQuery("select * from "+timelineNames.get(j)+";");
 				ArrayList<TLEvent> events = new ArrayList<TLEvent>();
+				int numEvents = 0;
 				while(resultSet.next()){ // Get all events for the event
+					numEvents++;
 					String name = resultSet.getString("eventName");
 					String type = resultSet.getString("type");
 					TLEvent event = null;
 					if(type.equals("atomic")){
-						String cat = resultSet.getString("Category");
-                                                Category category = new Category(cat);
+						String category = resultSet.getString("Category");
 						Date startDate = resultSet.getDate("startDate");
 						event = new Atomic(name, category, startDate); // TODO Get category from database.
 					}else if(type.equals("duration")){
-                                                String cat = resultSet.getString("Category");
-                                                Category category = new Category(cat);
+						String category = resultSet.getString("Category");
 						Date startDate = resultSet.getDate("startDate");
 						Date endDate = resultSet.getDate("endDate");
-						event = new Duration(name, category, startDate, endDate); // TODO Get category from database.
+						event = new Duration(name, category, startDate,endDate); // TODO Get category from database.
 					}else{
 						System.out.println("YOU DONE MESSED UP.");
 					}
 					events.add(event);
 				}
 				int label = getAxisLabel(timelineNames.get(j));
-				Timeline timeline = new Timeline(timelineNames.get(j), events, label);
+				Timeline timeline = new Timeline(timelineNames.get(j), events.toArray(new TLEvent[numEvents]), label);
 				timelines[j] = timeline;
 			}
 			close();
@@ -329,21 +305,15 @@ public class DBHelper implements DBHelperAPI{
 	}
 
 	@Override
-	public void saveEvent(TLEvent event) {
+	public void writeEvent(TLEvent event) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public boolean removeEvent(TLEvent event) {
+	public void removeEvent(TLEvent event) {
 		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean editEvent() {
-		// TODO Auto-generated method stub
-		return false;
+		
 	}
 
 }

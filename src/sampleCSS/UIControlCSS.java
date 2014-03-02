@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2011, 2013 Oracle and/or its affiliates.
  * All rights reserved. Use is subject to license terms.
  *
@@ -31,7 +31,6 @@
  */
 package sampleCSS;
 
-
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -59,11 +58,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 
-
 /**
  *
  * @author Alexander Kouznetsov
- * This was downloaded from the internet for a sample.
+ * This was downloaded from the Internet for a sample.
  */
 public class UIControlCSS extends Application implements sampleCSS.StyleStage.SceneCreator {
 

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+  <children>
+    <SplitPane dividerPositions="0.43147208121827413" focusTraversable="true" layoutX="0.0" layoutY="0.0" prefHeight="400.0" prefWidth="593.0">
+      <items>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="218.0" snapToPixel="true">
+          <children>
+            <MenuBar layoutX="11.0" layoutY="9.0">
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="New Timeline" />
+                    <MenuItem mnemonicParsing="false" text="Save Timeline" />
+                    <SeparatorMenuItem mnemonicParsing="false" />
+                    <MenuItem mnemonicParsing="false" text="Exit Timelord" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Undo" />
+                    <MenuItem mnemonicParsing="false" text="Redo" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="View">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Edit View" />
+                    <MenuItem mnemonicParsing="false" text="Multi View" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Insert">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="New Event" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <Text layoutX="16.0" layoutY="84.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Events" />
+            <Text layoutX="16.0" layoutY="171.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Timelines" />
+            <Button layoutX="22.0" layoutY="174.0" mnemonicParsing="false" text="New Timeline" />
+            <Button layoutX="22.0" layoutY="195.0" mnemonicParsing="false" text="Delete Timeline" />
+            <Button layoutX="22.0" layoutY="216.0" mnemonicParsing="false" text="Edit Timeline" />
+            <Button layoutX="22.0" layoutY="87.0" mnemonicParsing="false" text="Add Event" />
+            <Button layoutX="22.0" layoutY="129.0" mnemonicParsing="false" text="Edit Event" />
+            <Button layoutX="22.0" layoutY="108.0" mnemonicParsing="false" text="Delete Event" />
+            <Text layoutX="14.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Toolbar" />
+            <ComboBox fx:id="timelineListBoxed" layoutX="22.0" layoutY="238.0">
+              <items>
+                <FXCollections fx:factory="observableArrayList">
+                  <String fx:value="Item 1" />
+                  <String fx:value="Item 2" />
+                  <String fx:value="Item 3" />
+                </FXCollections>
+              </items>
+            </ComboBox>
+          </children>
+        </AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="341.0" />
+      </items>
+    </SplitPane>
+  </children>
+</AnchorPane>

@@ -14,10 +14,10 @@ import model.Timeline;
  * remove and read the entire thing. (This would speed up database operations)
  * 
  * @author Josh Wright
- Created: Jan 29, 2014
- Package: backend
-
- Note: could be updated to have _id as parameters, it will make editing and adding stuff a lot easier (add _id to Timeline and TLEvent).
+ * Created: Jan 29, 2014
+ * Package: backend
+ *
+ * Note: could be updated to have _id as parameters, it will make editing and adding stuff a lot easier (add _id to Timeline and TLEvent).
  *
  */
 public interface DBHelperAPI {
@@ -28,7 +28,7 @@ public interface DBHelperAPI {
 	 * @param timeline the timeline to write
 	 * @return
 	 */
-	public boolean saveTimeline(Timeline timeline);
+	public boolean writeTimeline(Timeline timeline);
 	
 	/**
 	 * Removes a timeline and all its information from the database
@@ -45,7 +45,7 @@ public interface DBHelperAPI {
 	 * @param newTimeline the new timeline to switch it with
 	 * @return the newly saved timeline
 	 */
-	public boolean editTimelineInfo(Timeline timeline);
+	public Timeline changeTimeline(Timeline oldTimeline, Timeline newTimeline);
 	
 	/**
 	 * Returns an array of all timelines currently in the database. The timelines have their events and any additional info built into them
@@ -53,26 +53,6 @@ public interface DBHelperAPI {
 	 * @return array of all timelines in the database
 	 */
 	public Timeline[] getTimelines();
-	
-	/**
-	 * Saves an event to the table of its timeline.
-	 * 
-	 * @param event The event to save
-	 */
-	public void saveEvent(TLEvent event);
-	
-	/**
-	 * Removes an event from its timeline's table.
-	 * 
-	 * @param event The event to remove
-	 * @return false if the event did not exist in the database
-	 */
-	public boolean removeEvent(TLEvent event);
-	
-	/**
-	 * Edit the details of a specified event
-	 * 
-	 * @return false if the event did not exist in the database
-	 */
-	public boolean editEvent();
+	public void writeEvent(TLEvent event);
+	public void removeEvent(TLEvent event);
 }
