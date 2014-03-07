@@ -2,7 +2,6 @@ package gui;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
 import model.Category;
 import model.TimelineMaker;
 import javafx.event.ActionEvent;
@@ -15,13 +14,16 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-
+/**
+ *
+ * @author Brian
+ */
 public class CategoryPropertiesWindowController {
 
-	private TimelineMaker timelineMaker;
-	
-	private Category category;
-	
+    private TimelineMaker timelineMaker;
+
+    private Category category;
+
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
 
@@ -49,12 +51,11 @@ public class CategoryPropertiesWindowController {
     @FXML // fx:id="renderColorLabel"
     private Label renderColorLabel; // Value injected by FXMLLoader
 
-
     // Handler for Button[fx:id="cancelButton"] onAction
     @FXML
     void cancelButtonPressed(ActionEvent event) {
-        Node  source = (Node)  event.getSource(); 
-        Stage stage  = (Stage) source.getScene().getWindow();
+        Node source = (Node) event.getSource();
+        Stage stage = (Stage) source.getScene().getWindow();
         stage.close();
     }
 
@@ -74,22 +75,27 @@ public class CategoryPropertiesWindowController {
         assert renderColorColorPicker != null : "fx:id=\"renderColorColorPicker\" was not injected: check your FXML file 'CategoryPropertiesWindow.fxml'.";
         assert renderColorLabel != null : "fx:id=\"renderColorLabel\" was not injected: check your FXML file 'CategoryPropertiesWindow.fxml'.";
 
-
     }
-    
-	public void initData(TimelineMaker timelineMaker, Category category) {
-		this.timelineMaker = timelineMaker;
-		this.category = category;
-		if(category != null){
-			loadCategoryInfo();
-		}
-	}
 
-	/**
-	 * @param category2
-	 */
-	private void loadCategoryInfo() {
-		categoryNameTextField.setText(category.getName());
-	}
+    //Method to initialize the category list for the program
+    /**
+     *
+     * @param timelineMaker
+     * @param category
+     */
+    public void initData(TimelineMaker timelineMaker, Category category) {
+        this.timelineMaker = timelineMaker;
+        this.category = category;
+        if (category != null) {
+            loadCategoryInfo();
+        }
+    }
+
+    /**
+     * @param category2
+     */
+    private void loadCategoryInfo() {
+        categoryNameTextField.setText(category.getName());
+    }
 
 }

@@ -1,4 +1,5 @@
 package gui;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -19,13 +20,16 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+/**
+ *
+ * @author Brian
+ */
+public class TimelinePropertiesWindowController {
 
-public class TimelinePropertiesWindowController{
+    private TimelineMaker timelineMaker;
 
-	private TimelineMaker timelineMaker;
-	
-	private Timeline timeline;
-	
+    private Timeline timeline;
+
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
 
@@ -77,11 +81,10 @@ public class TimelinePropertiesWindowController{
     @FXML // fx:id="titleTextField"
     private TextField titleTextField; // Value injected by FXMLLoader
 
-
     // Handler for Button[fx:id="cancelButton"] onAction
     @FXML
     void cancelButtonPressed(ActionEvent event) {
-        Node source = (Node) event.getSource(); 
+        Node source = (Node) event.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
         stage.close();
     }
@@ -90,49 +93,57 @@ public class TimelinePropertiesWindowController{
     @FXML
     void createButtonPressed(ActionEvent event) {
         String title = titleTextField.getText();
-        if(title.equals("")){
-        	//TODO title missing alert
-        	return;
+        if (title.equals("")) {
+            //TODO title missing alert
+            return;
         }
         Color color = colorColorChooser.getValue();
         AxisLabel axisUnit = axisUnitComboBox.getValue();
         Font font = null; //TODO set font?
-        if(timeline != null) timelineMaker.editTimeline(timeline, title, color, axisUnit, font);
-        else timelineMaker.addTimeline(title, color, axisUnit, font);
-        
-        Node source = (Node) event.getSource(); 
+        if (timeline != null) {
+            timelineMaker.editTimeline(timeline, title, color, axisUnit, font);
+        } else {
+            timelineMaker.addTimeline(title, color, axisUnit, font);
+        }
+
+        Node source = (Node) event.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
         stage.close();
     }
 
-
-	@FXML // This method is called by the FXMLLoader when initialization is complete
+    @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
-		timeline = null;
+        timeline = null;
         initComboBox();
     }
 
-	/**
-	 * 
-	 */
-	private void initComboBox() {
-		AxisLabel[] labels = Timeline.AxisLabel.values();
-		for(AxisLabel label : labels)
-			axisUnitComboBox.getItems().addAll(label);
-		axisUnitComboBox.setValue(labels[0]);
-	}
+    /**
+     *
+     */
+    private void initComboBox() {
+        AxisLabel[] labels = Timeline.AxisLabel.values();
+        for (AxisLabel label : labels) {
+            axisUnitComboBox.getItems().addAll(label);
+        }
+        axisUnitComboBox.setValue(labels[0]);
+    }
 
-	public void initData(TimelineMaker timelineMaker, Timeline timeline) {
-		this.timelineMaker = timelineMaker;
-		if(timeline != null){
-			loadTimelineInfo(timeline);
-			this.timeline = timeline;
-		}
-	}
+    /**
+     *
+     * @param timelineMaker
+     * @param timeline
+     */
+    public void initData(TimelineMaker timelineMaker, Timeline timeline) {
+        this.timelineMaker = timelineMaker;
+        if (timeline != null) {
+            loadTimelineInfo(timeline);
+            this.timeline = timeline;
+        }
+    }
 
-	private void loadTimelineInfo(Timeline timeline) {
-		titleTextField.setText(timeline.getName());
-		axisUnitComboBox.setValue(timeline.getAxisLabel());
-	}
+    private void loadTimelineInfo(Timeline timeline) {
+        titleTextField.setText(timeline.getName());
+        axisUnitComboBox.setValue(timeline.getAxisLabel());
+    }
 
 }

@@ -1,4 +1,6 @@
 package gui;
+
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -26,11 +28,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+/**
+ *
+ * @author Brian
+ */
+public class MainWindowController {
 
-public class MainWindowController{
+    private TimelineMaker timelineMaker;
 
-	private TimelineMaker timelineMaker;
-	
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
 
@@ -42,7 +47,7 @@ public class MainWindowController{
 
     @FXML // fx:id="addCategoryButton"
     private Button addCategoryButton; // Value injected by FXMLLoader
-    
+
     @FXML // fx:id="addEventButton"
     private Button addEventButton; // Value injected by FXMLLoader
 
@@ -58,7 +63,6 @@ public class MainWindowController{
     @FXML // fx:id="deleteCategoryButton"
     private Button deleteCategoryButton; // Value injected by FXMLLoader
 
-    
     @FXML // fx:id="deleteEventButton"
     private Button deleteEventButton; // Value injected by FXMLLoader
 
@@ -70,7 +74,7 @@ public class MainWindowController{
 
     @FXML // fx:id="editCategoryButton"
     private Button editCategoryButton; // Value injected by FXMLLoader
-    
+
     @FXML // fx:id="editEventButton"
     private Button editEventButton; // Value injected by FXMLLoader
 
@@ -97,7 +101,7 @@ public class MainWindowController{
 
     @FXML // fx:id="iconsSeparator"
     private Separator iconsSeparator; // Value injected by FXMLLoader
-      
+
     @FXML // fx:id="infoMenu"
     private Menu infoMenu; // Value injected by FXMLLoader
 
@@ -143,7 +147,6 @@ public class MainWindowController{
     @FXML // fx:id="toolbarSeparator"
     private Separator toolbarSeparator; // Value injected by FXMLLoader
 
-    
     // Handler for MenuItem[fx:id="aboutMenuItem"] onAction
     // Handler for MenuItem[fx:id="aboutMenuItem"] onMenuValidation
     @FXML
@@ -154,20 +157,20 @@ public class MainWindowController{
     // Handler for Button[fx:id="addCategoryButton"] onAction
     @FXML
     void addCategoryPressed(ActionEvent event) {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("CategoryPropertiesWindow.fxml"));
-			Parent root = (Parent)loader.load();
-	        CategoryPropertiesWindowController controller = loader.<CategoryPropertiesWindowController>getController();
-	        controller.initData(timelineMaker, null);
-			Stage stage = new Stage();
-			stage.setTitle("Add Category");
-			Scene scene = new Scene(root);
-	        scene.getStylesheets().add("gui/CategoryPropertiesWindow.css");
-	        stage.setScene(scene);
-	        stage.show();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("CategoryPropertiesWindow.fxml"));
+            Parent root = (Parent) loader.load();
+            CategoryPropertiesWindowController controller = loader.<CategoryPropertiesWindowController>getController();
+            controller.initData(timelineMaker, null);
+            Stage stage = new Stage();
+            stage.setTitle("Add Category");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("gui/CategoryPropertiesWindow.css");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Handler for Button[fx:id="addIconImageButton"] onAction
@@ -181,7 +184,7 @@ public class MainWindowController{
     void deleteCategoryPressed(ActionEvent event) {
         // handle the event here
     }
-    
+
     // Handler for Button[fx:id="deleteEventButton"] onAction
     @FXML
     void deleteEventPressed(ActionEvent event) {
@@ -198,68 +201,72 @@ public class MainWindowController{
     // Handler for Button[fx:id="deleteTimelineButton"] onAction
     @FXML
     void deleteTimelinePressed(ActionEvent event) {
-    	timelineMaker.deleteTimeline();
+        timelineMaker.deleteTimeline();
     }
-    
+
     // Handler for Button[fx:id="editCategoryButton"] onAction
     @FXML
     void editCategoryPressed(ActionEvent event) {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("CategoryPropertiesWindow.fxml"));
-			Parent root = (Parent)loader.load();
-	        CategoryPropertiesWindowController controller = loader.<CategoryPropertiesWindowController>getController();
-	        controller.initData(timelineMaker, null);
-			Stage stage = new Stage();
-			stage.setTitle("Edit Category");
-			Scene scene = new Scene(root);
-	        scene.getStylesheets().add("gui/CategoryPropertiesWindow.css");
-	        stage.setScene(scene);
-	        stage.show();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("CategoryPropertiesWindow.fxml"));
+            Parent root = (Parent) loader.load();
+            CategoryPropertiesWindowController controller = loader.<CategoryPropertiesWindowController>getController();
+            controller.initData(timelineMaker, null);
+            Stage stage = new Stage();
+            stage.setTitle("Edit Category");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("gui/CategoryPropertiesWindow.css");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Handler for Button[fx:id="editEventButton"] onAction
     @FXML
     void editEventPressed(ActionEvent event) {
-    	TLEvent selectedEvent = timelineMaker.getSelectedEvent();
-    	if(selectedEvent == null) return;
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("EventPropertiesWindow.fxml"));
-			Parent root = (Parent)loader.load();
-			EventPropertiesWindowController controller = loader.<EventPropertiesWindowController>getController();
-	        controller.initData(timelineMaker, selectedEvent);
-			Stage stage = new Stage();
-			stage.setTitle("Edit Event");
-			Scene scene = new Scene(root);
-	        scene.getStylesheets().add("gui/EventPropertiesWindow.css");
-			stage.setScene(scene);
-	        stage.show();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+        TLEvent selectedEvent = timelineMaker.getSelectedEvent();
+        if (selectedEvent == null) {
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("EventPropertiesWindow.fxml"));
+            Parent root = (Parent) loader.load();
+            EventPropertiesWindowController controller = loader.<EventPropertiesWindowController>getController();
+            controller.initData(timelineMaker, selectedEvent);
+            Stage stage = new Stage();
+            stage.setTitle("Edit Event");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("gui/EventPropertiesWindow.css");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Handler for Button[fx:id="editTimelineButton"] onAction
     @FXML
     void editTimelinePressed(ActionEvent event) {
-    	Timeline selectedTimeline = timelineMaker.getSelectedTimeline();
-    	if(selectedTimeline == null) return;
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("TimelinePropertiesWindow.fxml"));
-			Parent root = (Parent)loader.load();
-			TimelinePropertiesWindowController controller = loader.<TimelinePropertiesWindowController>getController();
-	        controller.initData(timelineMaker, selectedTimeline);
-			Stage stage = new Stage();
-			stage.setTitle("Edit Timeline");
-			Scene scene = new Scene(root);
-	        scene.getStylesheets().add("gui/TimelinePropertiesWindow.css");
-	        stage.setScene(scene);
-	        stage.show();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+        Timeline selectedTimeline = timelineMaker.getSelectedTimeline();
+        if (selectedTimeline == null) {
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("TimelinePropertiesWindow.fxml"));
+            Parent root = (Parent) loader.load();
+            TimelinePropertiesWindowController controller = loader.<TimelinePropertiesWindowController>getController();
+            controller.initData(timelineMaker, selectedTimeline);
+            Stage stage = new Stage();
+            stage.setTitle("Edit Timeline");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("gui/TimelinePropertiesWindow.css");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Handler for MenuItem[fx:id="exitMenuItem"] onAction
@@ -288,20 +295,20 @@ public class MainWindowController{
     // Handler for MenuItem[fx:id="newEventMenuItem"] onMenuValidation
     @FXML
     void newEventPressed(Event event) {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("EventPropertiesWindow.fxml"));
-			Parent root = (Parent)loader.load();
-	        EventPropertiesWindowController controller = loader.<EventPropertiesWindowController>getController();
-	        controller.initData(timelineMaker, null);
-			Stage stage = new Stage();
-			stage.setTitle("Add Event");
-			Scene scene = new Scene(root);
-	        scene.getStylesheets().add("gui/EventPropertiesWindow.css");
-	        stage.setScene(scene);
-	        stage.show();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("EventPropertiesWindow.fxml"));
+            Parent root = (Parent) loader.load();
+            EventPropertiesWindowController controller = loader.<EventPropertiesWindowController>getController();
+            controller.initData(timelineMaker, null);
+            Stage stage = new Stage();
+            stage.setTitle("Add Event");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("gui/EventPropertiesWindow.css");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Handler for Button[fx:id="addTimelineButton"] onAction
@@ -309,20 +316,20 @@ public class MainWindowController{
     // Handler for MenuItem[fx:id="newTimelineMenuItem"] onMenuValidation
     @FXML
     void newTimelinePressed(Event event) {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("TimelinePropertiesWindow.fxml"));
-			Parent root = (Parent)loader.load();
-			TimelinePropertiesWindowController controller = loader.<TimelinePropertiesWindowController>getController();
-	        controller.initData(timelineMaker, null);
-			Stage stage = new Stage();
-			stage.setTitle("Add Timeline");
-			Scene scene = new Scene(root);
-	        scene.getStylesheets().add("gui/EventPropertiesWindow.css");
-	        stage.setScene(scene);
-	        stage.show();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("TimelinePropertiesWindow.fxml"));
+            Parent root = (Parent) loader.load();
+            TimelinePropertiesWindowController controller = loader.<TimelinePropertiesWindowController>getController();
+            controller.initData(timelineMaker, null);
+            Stage stage = new Stage();
+            stage.setTitle("Add Timeline");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("gui/EventPropertiesWindow.css");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Handler for MenuItem[fx:id="saveMenuItem"] onAction
@@ -334,28 +341,37 @@ public class MainWindowController{
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
-    	timelinesListView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent arg0) {
-				timelineListViewClicked();
-			}
-		});
+        timelinesListView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent arg0) {
+                timelineListViewClicked();
+            }
+        });
     }
 
-    private void timelineListViewClicked(){
-    	timelineMaker.selectTimeline(timelinesListView.getSelectionModel().getSelectedItem());
+    private void timelineListViewClicked() {
+        timelineMaker.selectTimeline(timelinesListView.getSelectionModel().getSelectedItem());
     }
-    
-	public void populateListView() {
-		timelinesListView.setItems(FXCollections.observableList(timelineMaker.getTimelineTitles()));
-		if(timelineMaker.getSelectedTimeline() != null) timelinesListView.getSelectionModel().select(timelineMaker.getSelectedTimeline().getName());
-	}
 
-	public void initData(TimelineMaker timelineMaker) {
-		this.timelineMaker = timelineMaker;
-		timelineMaker.setMainWindow(this);
-		populateListView();
-		timelineMaker.graphics.setPanel(renderScrollPane);
-	}
+    /**
+     *
+     */
+    public void populateListView() {
+        timelinesListView.setItems(FXCollections.observableList(timelineMaker.getTimelineTitles()));
+        if (timelineMaker.getSelectedTimeline() != null) {
+            timelinesListView.getSelectionModel().select(timelineMaker.getSelectedTimeline().getName());
+        }
+    }
+
+    /**
+     *
+     * @param timelineMaker
+     */
+    public void initData(TimelineMaker timelineMaker) {
+        this.timelineMaker = timelineMaker;
+        timelineMaker.setMainWindow(this);
+        populateListView();
+        timelineMaker.graphics.setPanel(renderScrollPane);
+    }
 
 }

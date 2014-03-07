@@ -1,4 +1,5 @@
 package gui;
+
 import java.net.URL;
 import java.sql.Date;
 import java.util.ResourceBundle;
@@ -19,13 +20,16 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+/**
+ *
+ * @author Brian
+ */
+public class EventPropertiesWindowController {
 
-public class EventPropertiesWindowController{
+    private TimelineMaker timelineMaker;
 
-	private TimelineMaker timelineMaker;
-	
-	private TLEvent oldEvent;
-	
+    private TLEvent oldEvent;
+
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
 
@@ -80,32 +84,34 @@ public class EventPropertiesWindowController{
     @FXML // fx:id="typeLabel"
     private Label typeLabel; // Value injected by FXMLLoader
 
-
     // Handler for Button[fx:id="cancelButton"] onAction
     @FXML
     void cancelPressed(ActionEvent event) {
-        Node  source = (Node)  event.getSource(); 
-        Stage stage  = (Stage) source.getScene().getWindow();
+        Node source = (Node) event.getSource();
+        Stage stage = (Stage) source.getScene().getWindow();
         stage.close();
     }
 
-    // Handler for Button[fx:id="createButton"] onAction
+    // Handler for Button[fx:id="createButton"] onAction -- Creates event
     @FXML
     void createPressed(ActionEvent event) {
-    	String title = titleTextField.getText();
+        String title = titleTextField.getText();
         Date startDate = Date.valueOf(startDateTextField.getText());
         Date endDate = null;
-    	Object category = categoryComboBox.getValue(); //TODO get Category working
-    	String description = descriptionTextArea.getText();
-    	if(durationCheckBox.isSelected()){
-    		System.out.println("Hola");
-    		endDate = Date.valueOf(endDateTextField.getText());
-    	}
-    	if(oldEvent != null) timelineMaker.editEvent(oldEvent, title, startDate, endDate, category, description);
-    	else timelineMaker.addEvent(title, startDate, endDate, category, description);
-        
-    	Node  source = (Node)  event.getSource(); 
-        Stage stage  = (Stage) source.getScene().getWindow();
+        Object category = categoryComboBox.getValue(); //TODO get Category working
+        String description = descriptionTextArea.getText();
+        if (durationCheckBox.isSelected()) {
+            System.out.println("Hola");
+            endDate = Date.valueOf(endDateTextField.getText());
+        }
+        if (oldEvent != null) {
+            timelineMaker.editEvent(oldEvent, title, startDate, endDate, category, description);
+        } else {
+            timelineMaker.addEvent(title, startDate, endDate, category, description);
+        }
+
+        Node source = (Node) event.getSource();
+        Stage stage = (Stage) source.getScene().getWindow();
         stage.close();
     }
 
@@ -119,34 +125,42 @@ public class EventPropertiesWindowController{
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
-    	endDateTextField.setVisible(false);
+        endDateTextField.setVisible(false);
         dateToLabel.setVisible(false);
         oldEvent = null;
-      //TODO shift startDateTextField over
+        //TODO shift startDateTextField over
         initComboBox();
     }
 
-	private void initComboBox() {
-		//TODO initialize categories
-	}
+    private void initComboBox() {
+        //TODO initialize categories
+    }
 
-	public void initData(TimelineMaker timelineMaker, TLEvent event) {
-		this.timelineMaker = timelineMaker;
-		this.oldEvent = event;
-		if(event != null) loadEventInfo(event);
-	}
+    /**
+     *
+     * @param timelineMaker
+     * @param event
+     */
+    public void initData(TimelineMaker timelineMaker, TLEvent event) {
+        this.timelineMaker = timelineMaker;
+        this.oldEvent = event;
+        if (event != null) {
+            loadEventInfo(event);
+        }
+    }
 
-	private void loadEventInfo(TLEvent event) {
-		titleTextField.setText(event.getName());
-		if(event instanceof Duration){
-			durationCheckBox.setSelected(true);
-	        endDateTextField.setVisible(!endDateTextField.isVisible());
-	        dateToLabel.setVisible(!dateToLabel.isVisible());
-			endDateTextField.setText(((Duration) event).getEndDate().toString());
-		}
-		startDateTextField.setText(event.getStartDate().toString());
-		categoryComboBox.setValue(event.getCategory().getName());
-		descriptionTextArea.setText(event.getDescription());
-	}
+    //Method to load event info into window for editing and resaving
+    private void loadEventInfo(TLEvent event) {
+        titleTextField.setText(event.getName());
+        if (event instanceof Duration) {
+            durationCheckBox.setSelected(true);
+            endDateTextField.setVisible(!endDateTextField.isVisible());
+            dateToLabel.setVisible(!dateToLabel.isVisible());
+            endDateTextField.setText(((Duration) event).getEndDate().toString());
+        }
+        startDateTextField.setText(event.getStartDate().toString());
+        categoryComboBox.setValue(event.getCategory().getName());
+        descriptionTextArea.setText(event.getDescription());
+    }
 
 }

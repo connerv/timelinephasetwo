@@ -11,63 +11,65 @@ import java.util.ArrayList;
 
 /**
  * TimelineMaker.java
- * 
- * The model of the timeline editor and viewer. Contains all necessary objects to model the application.
- * 
- * @author Josh Wright and Andrew Thompson
- * Wheaton College, CS 335, Spring 2014
- * Project Phase 1
- * Feb 15, 2014
+ *
+ * The model of the timeline editor and viewer. Contains all necessary objects
+ * to model the application.
+ *
+ * @author Josh Wright and Andrew Thompson Wheaton College, CS 335, Spring 2014
+ * Project Phase 1 Feb 15, 2014
  *
  */
 public class TimelineMaker {
-	/**
-	 * A list of all the timelines in this application.
-	 */
-	private ArrayList<Timeline> timelines;
-	/**
-	 * The timeline selected in this application.
-	 */
-	private Timeline selectedTimeline;
-	/**
-	 * The event selected in this application.
-	 */
-	private TLEvent selectedEvent;
-	/**
-	 * The database for storing timelines of this application.
-	 */
-	private DBHelper database;
-	/**
-	 * The main GUI window for this application.
-	 */
-	private MainWindowController mainWindow;
-	/**
-	 * The graphics object for displaying timelines in this application.
-	 */
-	public TimelineGraphics graphics;
-        int idCounter;
-	/**
-	 * Constructor.
-	 * Create a new TimelineMaker application model with database, graphics, and GUI components.
-	 */
-	public TimelineMaker() {
-		database = new DBHelper("timeline.db");
-		graphics = new TimelineGraphics(this);
-		timelines = new ArrayList<Timeline>();
 
-		try {
-			for (Timeline t : database.getTimelines())
-				timelines.add(t);
-			selectedTimeline = timelines.get(0);
-			selectedEvent = null;
-		} catch (IndexOutOfBoundsException e) {
-			System.out.println("Your database is empty.");
-		} catch (Exception e){
-			System.out.println("Error loading from Database.");
-		}
+    /**
+     * A list of all the timelines in this application.
+     */
+    private ArrayList<Timeline> timelines;
+    /**
+     * The timeline selected in this application.
+     */
+    private Timeline selectedTimeline;
+    /**
+     * The event selected in this application.
+     */
+    private TLEvent selectedEvent;
+    /**
+     * The database for storing timelines of this application.
+     */
+    private DBHelper database;
+    /**
+     * The main GUI window for this application.
+     */
+    private MainWindowController mainWindow;
+    /**
+     * The graphics object for displaying timelines in this application.
+     */
+    public TimelineGraphics graphics;
+    int idCounter;
 
-		//initGUI();
-	}
+    /**
+     * Constructor. Create a new TimelineMaker application model with database,
+     * graphics, and GUI components.
+     */
+    public TimelineMaker() {
+        database = new DBHelper("timeline.db");
+        graphics = new TimelineGraphics(this);
+        timelines = new ArrayList<>();
+
+        try {
+            for (Timeline t : database.getTimelines()) {
+                timelines.add(t);
+            }
+            selectedTimeline = timelines.get(0);
+            selectedEvent = null;
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Your database is empty.");
+        } catch (Exception e) {
+            System.out.println("Error loading from Database.");
+        }
+
+        //initGUI();
+    }
 
 //	/**
 //	 * Constructor.
@@ -92,7 +94,6 @@ public class TimelineMaker {
 //		while (!timelines.isEmpty())
 //			deleteTimeline();
 //	}
-
 //	/**
 //	 * Initialize the GUI components of this application.
 //	 */
@@ -127,196 +128,229 @@ public class TimelineMaker {
 //		});
 //
 //	}
+    /**
+     * Retrieve a list of the names of all the timelines.
+     *
+     * @return timelines
+     */
+    public ArrayList<String> getTimelineTitles() {
+        ArrayList<String> toReturn = new ArrayList<>();
+        for (Timeline t : timelines) {
+            toReturn.add(t.getName());
+        }
+        return toReturn;
+    }
 
-	/**
-	 * Retrieve a list of the names of all the timelines.
-	 * @return timelines
-	 */
-	public ArrayList<String> getTimelineTitles() {
-		ArrayList<String> toReturn = new ArrayList<String>();
-		for (Timeline t: timelines){
-			toReturn.add(t.getName());
-		}
-		return toReturn;
-	}
+    /**
+     * Retrieve the timeline with the parameterized name.
+     *
+     * @param title The name of the timeline to be found
+     * @return The timeline with the correct name; null otherwise.
+     */
+    private Timeline getTimeline(String title) {
+        for (Timeline t : timelines) {
+            if (t.getName().equals(title)) {
+                return t;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Retrieve the timeline with the parameterized name.
-	 * @param title The name of the timeline to be found
-	 * @return The timeline with the correct name; null otherwise.
-	 */
-	private Timeline getTimeline(String title) { 
-		for (Timeline t : timelines)
-			if (t.getName().equals(title))
-				return t;
-		return null;
-	}
+    /**
+     * Retrieve the currently selected timeline.
+     *
+     * @return selectedTimeline
+     */
+    public Timeline getSelectedTimeline() {
+        return selectedTimeline;
+    }
 
-	/**
-	 * Retrieve the currently selected timeline.
-	 * @return selectedTimeline
-	 */
-	public Timeline getSelectedTimeline() {
-		return selectedTimeline;
-	}
+    /**
+     * Set the selected timeline. Find the timeline of the parameterized title
+     * and set selectedTimeline to it. Update selectedTimeline, selectedTLEvent,
+     * and graphics.
+     *
+     * @param title of the timeline
+     */
+    public void selectTimeline(String title) {
+        selectedTimeline = getTimeline(title);
+        selectedEvent = null;
+        if (selectedTimeline != null) {
+            updateGraphics();
+        }
+    }
 
-	/**
-	 * Set the selected timeline.
-	 * Find the timeline of the parameterized title and set selectedTimeline to it.
- Update selectedTimeline, selectedTLEvent, and graphics.
-	 * @param title of the timeline
-	 */
-	public void selectTimeline(String title) {
-		selectedTimeline = getTimeline(title);
-		selectedEvent = null;
-		if (selectedTimeline != null)
-			updateGraphics();
-	}
+    /**
+     * Add a timeline to this model. Update selectedTimeline, selectedTLEvent,
+     * graphics, and database.
+     *
+     * @param title
+     * @param color
+     * @param axisUnit
+     * @param font
+     */
+    public void addTimeline(String title, Color color, AxisLabel axisUnit, Font font) {
+        Timeline t = new Timeline(title, axisUnit);
+        selectedTimeline = t;
+        selectedEvent = null;
+        timelines.add(selectedTimeline);
 
-	/**
-	 * Add a timeline to this model.
-	 * Update selectedTimeline, selectedTLEvent, graphics, and database.
-	 * @param t the timeline to be added
-	 */
-	public void addTimeline(String title, Color color, AxisLabel axisUnit, Font font) {
-		Timeline t = new Timeline(title, axisUnit);
-		selectedTimeline = t;
-		selectedEvent = null;
-		timelines.add(selectedTimeline);
+        database.saveTimeline(selectedTimeline);
+        mainWindow.populateListView();
+        //gui.updateTimelines(getTimelineTitles(), selectedTimeline.getName());
+        updateGraphics();
+    }
 
-		database.saveTimeline(selectedTimeline);
-		mainWindow.populateListView();
-		//gui.updateTimelines(getTimelineTitles(), selectedTimeline.getName());
-		updateGraphics();
-	}
+    /**
+     * Remove a timeline from this model. Update selectedTimeline,
+     * selectedTLEvent, graphics, and database.
+     */
+    public void deleteTimeline() {
+        if (selectedTimeline != null) {
+            timelines.remove(selectedTimeline);
+            database.removeTimeline(selectedTimeline);
+            selectedTimeline = null;
+            selectedEvent = null;
+            graphics.clearScreen();
+            mainWindow.populateListView();
+        }
+    }
 
-	/**
-	 * Remove a timeline from this model.
-	 * Update selectedTimeline, selectedTLEvent, graphics, and database.
-	 * @param t the timeline to be removed
-	 */
-	public void deleteTimeline() {
-		if (selectedTimeline != null) {
-			timelines.remove(selectedTimeline);
-			database.removeTimeline(selectedTimeline);
-			selectedTimeline = null;
-			selectedEvent = null;
-			graphics.clearScreen();
-			mainWindow.populateListView();
-		}
-	}
+    /**
+     * Edit the selected timeline. Remove the selected timeline and replace it
+     * with the parameterized one. Update selectedTimeline, selectedTLEvent,
+     * graphics, and database.
+     *
+     * @param t the new timeline
+     * @param title
+     * @param color
+     * @param axisUnit
+     * @param font
+     */
+    public void editTimeline(Timeline t, String title, Color color, AxisLabel axisUnit, Font font) {
+        timelines.remove(selectedTimeline);
+        Timeline newTimeline = new Timeline(title, t.getEvents(), axisUnit);
+        newTimeline.setID(t.getID());
+        timelines.add(newTimeline);
+        //database.removeTimeline(selectedTimeline);
+        //database.saveTimeline(newTimeline);
+        database.editTimelineInfo(newTimeline); //TODO get this working
+        selectedTimeline = newTimeline;
+        mainWindow.populateListView();
+        updateGraphics();
+    }
 
-	/**
-	 * Edit the selected timeline.
-	 * Remove the selected timeline and replace it with the parameterized one.
- Update selectedTimeline, selectedTLEvent, graphics, and database.
-	 * @param t the new timeline
-	 */
-	public void editTimeline(Timeline t, String title, Color color, AxisLabel axisUnit, Font font) {
-		timelines.remove(selectedTimeline);
-		Timeline newTimeline = new Timeline(title, t.getEvents(), axisUnit);
-		newTimeline.setID(t.getID());
-		timelines.add(newTimeline);
-		//database.removeTimeline(selectedTimeline);
-		//database.saveTimeline(newTimeline);
-		database.editTimelineInfo(newTimeline); //TODO get this working
-		selectedTimeline = newTimeline;
-		mainWindow.populateListView();
-		updateGraphics();
-	}
+    /**
+     * Retrieve the currently selected event.
+     *
+     * @return selectedTLEvent
+     */
+    public TLEvent getSelectedEvent() {
+        return selectedEvent;
+    }
 
-	/**
-	 * Retrieve the currently selected event.
-	 * @return selectedTLEvent
-	 */
-	public TLEvent getSelectedEvent() { 
-		return selectedEvent; 
-	}
+    /**
+     * Set the selected event.
+     *
+     * @param e The event to be selected
+     */
+    public void selectEvent(TLEvent e) {
+        if (e != null) {
+            selectedEvent = e;
+        }
+    }
 
-	/**
-	 * Set the selected event.
-	 * @param e The event to be selected
-	 */
-	public void selectEvent(TLEvent e) {
-		if (e != null)
-			selectedEvent = e;
-	}
+    /**
+     * Add an event to the selected timeline. Update selectedTimeline,
+     * selectedTLEvent, graphics, and database.
+     *
+     * @param title
+     * @param startDate
+     * @param category
+     * @param endDate
+     * @param description
+     */
+    public void addEvent(String title, Date startDate, Date endDate, Object category, String description) {
+        TLEvent event;
+        if (endDate != null) {
+            event = new Duration(title, new Category(""), startDate, endDate);
+        } else {
+            event = new Atomic(title, new Category(""), startDate);
+        }
+        if (selectedTimeline != null) {
+            selectedTimeline.addEvent(event);
+            selectedEvent = event;
+            updateGraphics();
+            database.saveEvent(event, selectedTimeline.getName());
+        }
+    }
 
-	/**
-	 * Add an event to the selected timeline.
-	 * Update selectedTimeline, selectedTLEvent, graphics, and database.
-	 * @param e the new event
-	 */
-	public void addEvent(String title, Date startDate, Date endDate, Object category, String description) {
-		TLEvent event;
-		if(endDate != null){
-			event = new Duration(title, new Category(""), startDate, endDate);
-		}
-		else{
-			event = new Atomic(title, new Category(""), startDate);
-		}
-		if (selectedTimeline != null) {
-			selectedTimeline.addEvent(event);
-			selectedEvent = event;
-			updateGraphics();
-			database.saveEvent(event, selectedTimeline.getName());
-		}
-	}
+    /**
+     * Delete the selected event from the timeline. Update selectedTimeline,
+     * selectedTLEvent, graphics, and database.
+     */
+    public void deleteEvent() {
+        if (selectedEvent != null && selectedTimeline != null && selectedTimeline.contains(selectedEvent)) {
+            selectedTimeline.removeEvent(selectedEvent);
+            database.removeEvent(selectedEvent, selectedTimeline.getName());
+            selectedEvent = null;
+            updateGraphics();
+        }
+    }
 
-	/**
-	 * Delete the selected event from the timeline.
-	 * Update selectedTimeline, selectedTLEvent, graphics, and database.
-	 */
-	public void deleteEvent() {
-		if (selectedEvent != null && selectedTimeline != null && selectedTimeline.contains(selectedEvent)) {
-			selectedTimeline.removeEvent(selectedEvent);
-			database.removeEvent(selectedEvent, selectedTimeline.getName());
-			selectedEvent = null;
-			updateGraphics();
-		}
-	}
+    /**
+     * Edit the selected event. Remove the currently selected event from the
+     * timeline and replace it with the parameter. Update selectedTimeline,
+     * selectedTLEvent, graphics, and database.
+     *
+     * @param oldEvent
+     * @param title
+     * @param startDate
+     * @param endDate
+     * @param category
+     * @param description
+     */
+    public void editEvent(TLEvent oldEvent, String title, Date startDate, Date endDate, Object category, String description) {
+        if (selectedEvent != null && selectedTimeline != null && selectedTimeline.contains(selectedEvent)) {
+            selectedTimeline.removeEvent(selectedEvent);
+            TLEvent toAdd;
+            if (endDate != null) {
+                toAdd = new Duration(title, new Category(""), startDate, endDate);
+            } else {
+                toAdd = new Atomic(title, new Category(""), startDate);
+            }
+            toAdd.setID(oldEvent.getID());
+            selectedEvent = toAdd;
+            selectedTimeline.addEvent(toAdd);
 
-	/**
-	 * Edit the selected event.
-	 * Remove the currently selected event from the timeline and replace it with the parameter.
- Update selectedTimeline, selectedTLEvent, graphics, and database.
-	 * @param e the new event
-	 */
-	public void editEvent(TLEvent oldEvent, String title, Date startDate, Date endDate, Object category, String description) {
-		if (selectedEvent != null && selectedTimeline != null && selectedTimeline.contains(selectedEvent)) {
-			selectedTimeline.removeEvent(selectedEvent);
-			TLEvent toAdd;
-			if(endDate != null) toAdd = new Duration(title, new Category(""), startDate, endDate);
-			else toAdd = new Atomic(title, new Category(""), startDate);
-			toAdd.setID(oldEvent.getID());
-			selectedEvent = toAdd;
-			selectedTimeline.addEvent(toAdd);
+            updateGraphics();
 
-			updateGraphics();
+            database.editEvent(toAdd, selectedTimeline.getName());
+        }
+    }
 
-			database.editEvent(toAdd, selectedTimeline.getName());
-		}
-	}
+    /**
+     * Update the graphics for the display screen.
+     */
+    public void updateGraphics() {
+        graphics.clearScreen();
+        graphics.renderTimeline(selectedTimeline);
 
-	/**
-	 * Update the graphics for the display screen.
-	 */
-	public void updateGraphics() { 
-		graphics.clearScreen();
-		graphics.renderTimeline(selectedTimeline);
-		
-	}
-        
-        public int getUniqueID() {
-            return idCounter++;
-         }
+    }
 
-		/**
-		 * @param mainWindow the mainWindow to set
-		 */
-		public void setMainWindow(MainWindowController mainWindow) {
-			this.mainWindow = mainWindow;
-		}
+    /**
+     *
+     * @return
+     */
+    public int getUniqueID() {
+        return idCounter++;
+    }
 
+    /**
+     * @param mainWindow the mainWindow to set
+     */
+    public void setMainWindow(MainWindowController mainWindow) {
+        this.mainWindow = mainWindow;
+    }
 
 }
